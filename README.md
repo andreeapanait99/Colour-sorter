@@ -17,3 +17,4 @@ A machine that can sort candies by color, using an Arduino UNO, 2 servo motors a
 The top servo moves the candy received from the funnel in front of the color sensor in order to be analyzed. The bottom servo is then moved and the candy slides into the coresponding container.
 
 ## Video
+https://drive.google.com/drive/u/1/folders/1FUK557TI7eQRl71hSaMn-4xKPxHtbtDK
