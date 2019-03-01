@@ -26,6 +26,7 @@
 #define TOPSERVO_LOW 60
 #define TOPSERVO_MIDDLE 20
 #define TOPSERVO_HIGH -30
+#define TOPSERVO_INIT 115
 #define BOTTOMSERVO_ORANGE 65
 #define BOTTOMSERVO_GREEN 95
 #define BOTTOMSERVO_YELLOW 125
@@ -46,7 +47,7 @@ int readColor()
   int redFrequency = pulseIn(SENSOR_OUT, LOW);
   //Printing the value on the serial monitor
   Serial.print("R = "); 
-  Serial.print(redFrequency); //printing red color frequency
+  Serial.print(redFrequency); 
   Serial.print("  ");
   delay(50);
   //Setting Green filtered photodiodes to be read
@@ -56,7 +57,7 @@ int readColor()
   int greenFrequency = pulseIn(SENSOR_OUT, LOW);
   //Printing the value on the serial monitor
   Serial.print("G = ");
-  Serial.print(greenFrequency);//printing green color frequency
+  Serial.print(greenFrequency);
   Serial.print("  ");
   delay(50);
   //Setting Blue filtered photodiodes to be read
@@ -66,7 +67,7 @@ int readColor()
   int blueFrequency = pulseIn(SENSOR_OUT, LOW);
   //Printing the value on the serial monitor
   Serial.print("B = ");
-  Serial.print(blueFrequency);//printing blue color frequency
+  Serial.print(blueFrequency);
   Serial.println("  ");
   delay(50);
   if(greenFrequency < ORANGE_MAX_GREEN & greenFrequency > ORANGE_MIN_GREEN & blueFrequency < ORANGE_MAX_BLUE & blueFrequency > ORANGE_MIN_BLUE)
@@ -90,22 +91,24 @@ int readColor()
 
 void setup() 
 {
+  //Setting the color sensor
   pinMode(S0, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S3, OUTPUT);
   pinMode(SENSOR_OUT, INPUT);
-  // Setting frequency-scaling to 20%
+  //Setting frequency-scaling to 20%
   digitalWrite(S0, HIGH);
   digitalWrite(S1, LOW);
   Serial.begin(9600);
 }
 void loop() 
 {
+  //I attached and detached the servos because the vibrations interfered with the color sensor
+  //Moving the top servo to retrieve the candy and to move it in front of the sensor
   topServo.attach(TOPSERVO_PIN);
-  topServo.write(115);
+  topServo.write(TOPSERVO_INIT);
   delay(500);
-  
   for(int i = TOPSERVO_LOW; i > TOPSERVO_MIDDLE; i--) 
   {
     topServo.write(i);
@@ -113,8 +116,9 @@ void loop()
   }
   topServo.detach();
   delay(500);
-  
+  //reading the color
   color = readColor();
+  //moving the bottom servo to the respective container
   bottomServo.attach(BOTTOMSERVO_PIN);
   delay(50);
   switch (color) 
@@ -140,6 +144,7 @@ void loop()
   }
   delay(300);
   bottomServo.detach();
+  //moving the candy to the slider
   topServo.attach(TOPSERVO_PIN);
   for(int i = TOPSERVO_MIDDLE; i > TOPSERVO_HIGH; i--) 
   {
@@ -148,6 +153,7 @@ void loop()
   } 
   topServo.detach();
   delay(200);
+  //moving the top servo back to the initial position
   topServo.attach(TOPSERVO_PIN);
   for(int i = TOPSERVO_HIGH; i < TOPSERVO_LOW; i++) 
   {
@@ -155,5 +161,6 @@ void loop()
     delay(2);
   }
   topServo.detach();
+  //reinitializing the color
   color = 0;
 }
